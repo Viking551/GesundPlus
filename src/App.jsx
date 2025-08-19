@@ -488,40 +488,37 @@ const ContactModal = ({ data, onClose }) => {
         const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
 
         const reportText = `
-ZUSAMMENFASSUNG DER ANALYSE
---------------------------
-Lebensphase: ${data.age}
-Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}
-Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}
-Energie-Strategie: ${data.energyStrategy}
-Stress-Wetter: ${data.stressWeather}
-Alltags-Rucksack: ${data.burdens.join(', ')}
-
-KOSTEN-GEGENÜBERSTELLUNG
---------------------------
-${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
---------------------------
-Total mit VVG: CHF ${totalCostWith}
-Total ohne VVG: CHF ${totalCostWithout}
+ZUSAMMENFASSUNG DER ANALYSE%0A
+--------------------------%0A
+Lebensphase: ${data.age}%0A
+Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}%0A
+Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}%0A
+Energie-Strategie: ${data.energyStrategy}%0A
+Stress-Wetter: ${data.stressWeather}%0A
+Alltags-Rucksack: ${data.burdens.join(', ')}%0A%0A
+KOSTEN-GEGENÜBERSTELLUNG%0A
+--------------------------%0A
+${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('%0A')}%0A
+--------------------------%0A
+Total mit VVG: CHF ${totalCostWith}%0A
+Total ohne VVG: CHF ${totalCostWithout}%0A
         `;
 
         const subject = "Neue Beratungsanfrage von GesundPlus";
         const body = `
-Hallo, ich möchte eine kostenlose Beratung.
-
-Meine Kontaktangaben:
-Name: ${formData.name}
-E-Mail: ${formData.email}
-Telefon: ${formData.phone}
-Nachricht: ${formData.message || 'Keine'}
-
----
-MEIN BERICHT
----
+Hallo, ich möchte eine kostenlose Beratung.%0A%0A
+Meine Kontaktangaben:%0A
+Name: ${formData.name}%0A
+E-Mail: ${formData.email}%0A
+Telefon: ${formData.phone || 'Nicht angegeben'}%0A
+Nachricht: ${formData.message || 'Keine'}%0A%0A
+---%0A
+MEIN BERICHT%0A
+---%0A
 ${reportText}
         `;
         
-        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${body}`;
         setIsSubmitted(true);
     };
 
@@ -818,8 +815,6 @@ const PrioritiesStep = ({ data, updateData, nextStep, prevStep }) => {
         updateData({ priorities: { ...data.priorities, [id]: value } });
     };
 
-    const allPrioritiesSet = selectedServices.every(s => data.priorities[s.id]);
-
     return (
         <div className="animate-fade-in">
             <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-8">Was ist dir am wichtigsten?</h2>
@@ -844,7 +839,7 @@ const PrioritiesStep = ({ data, updateData, nextStep, prevStep }) => {
             </div>
             <div className="flex justify-between">
                 <Button onClick={prevStep} variant="secondary">Zurück</Button>
-                <Button onClick={nextStep} disabled={!allPrioritiesSet}>Weiter</Button>
+                <Button onClick={nextStep}>Weiter</Button>
             </div>
         </div>
     );
@@ -1054,40 +1049,37 @@ const ContactStep = ({ data, prevStep }) => {
         const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
 
         const reportText = `
-ZUSAMMENFASSUNG DER ANALYSE
---------------------------
-Lebensphase: ${data.age}
-Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}
-Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}
-Energie-Strategie: ${data.energyStrategy}
-Stress-Wetter: ${data.stressWeather}
-Alltags-Rucksack: ${data.burdens.join(', ')}
-
-KOSTEN-GEGENÜBERSTELLUNG
---------------------------
-${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
---------------------------
-Total mit VVG: CHF ${totalCostWith}
-Total ohne VVG: CHF ${totalCostWithout}
+ZUSAMMENFASSUNG DER ANALYSE%0A
+--------------------------%0A
+Lebensphase: ${data.age}%0A
+Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}%0A
+Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}%0A
+Energie-Strategie: ${data.energyStrategy}%0A
+Stress-Wetter: ${data.stressWeather}%0A
+Alltags-Rucksack: ${data.burdens.join(', ')}%0A%0A
+KOSTEN-GEGENÜBERSTELLUNG%0A
+--------------------------%0A
+${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('%0A')}%0A
+--------------------------%0A
+Total mit VVG: CHF ${totalCostWith}%0A
+Total ohne VVG: CHF ${totalCostWithout}%0A
         `;
 
         const subject = "Neue Beratungsanfrage von GesundPlus";
         const body = `
-Hallo, ich möchte eine kostenlose Beratung.
-
-Meine Kontaktangaben:
-Name: ${formData.name}
-E-Mail: ${formData.email}
-Telefon: ${formData.phone}
-Nachricht: ${formData.message || 'Keine'}
-
----
-MEIN BERICHT
----
+Hallo, ich möchte eine kostenlose Beratung.%0A%0A
+Meine Kontaktangaben:%0A
+Name: ${formData.name}%0A
+E-Mail: ${formData.email}%0A
+Telefon: ${formData.phone || 'Nicht angegeben'}%0A
+Nachricht: ${formData.message || 'Keine'}%0A%0A
+---%0A
+MEIN BERICHT%0A
+---%0A
 ${reportText}
         `;
         
-        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${body}`;
         setIsSubmitted(true);
     };
 
