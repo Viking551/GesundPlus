@@ -897,6 +897,42 @@ const ResultsStep = ({ data, prevStep, showCatalog, nextStep }) => {
         setShowComparison(true);
     };
 
+    const handleExport = () => {
+        const reportWindow = window.open('', '_blank');
+        reportWindow.document.write(`
+            <html>
+                <head>
+                    <title>Dein GesundPlus Bericht</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                </head>
+                <body class="font-sans p-10">
+                    <h1 class="text-3xl font-bold text-blue-600 mb-6">Dein persönlicher GesundPlus Bericht</h1>
+                    <div class="mb-8 p-4 bg-gray-100 rounded-lg">
+                        <h2 class="text-xl font-bold mb-2">Deine Antworten</h2>
+                        <p><strong>Lebensphase:</strong> ${data.age}</p>
+                        <p><strong>Kanton:</strong> ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}</p>
+                        <p><strong>Beziehung zum Körper:</strong> ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}</p>
+                        <p><strong>Energie-Strategie:</strong> ${data.energyStrategy}</p>
+                        <p><strong>Stress-Wetter:</strong> ${data.stressWeather}</p>
+                        <p><strong>Alltags-Rucksack:</strong> ${data.burdens.join(', ')}</p>
+                    </div>
+                    <div class="mb-8 p-4 bg-blue-50 rounded-lg">
+                         <h2 class="text-xl font-bold mb-2">Kosten-Gegenüberstellung</h2>
+                         <table class="w-full text-left">
+                            <thead><tr><th class="p-2">Behandlung</th><th class="p-2 text-right">Ohne VVG</th><th class="p-2 text-right">Mit VVG</th></tr></thead>
+                            <tbody>
+                            ${selectedServicesData.map(s => `<tr><td class="p-2 border-t">${s.name}</td><td class="p-2 border-t text-right">CHF ${s.costs.without}</td><td class="p-2 border-t text-right">CHF ${s.costs.with}</td></tr>`).join('')}
+                            <tr class="font-bold"><td class="p-2 border-t">Total</td><td class="p-2 border-t text-right">CHF ${totalCostWithout}</td><td class="p-2 border-t text-right">CHF ${totalCostWith}</td></tr>
+                            </tbody>
+                         </table>
+                    </div>
+                     <p class="text-center text-gray-600">Drucke diese Seite (Ctrl+P), um sie als PDF zu speichern.</p>
+                </body>
+            </html>
+        `);
+        reportWindow.document.close();
+    };
+
     return (
         <div className="animate-fade-in">
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">Dein Geld, deine Gesundheit.</h2>
@@ -970,7 +1006,10 @@ const ResultsStep = ({ data, prevStep, showCatalog, nextStep }) => {
 
              <div className="flex justify-between mt-8">
                 <Button onClick={prevStep} variant="secondary">Zurück</Button>
-                <Button onClick={nextStep} variant="primary" disabled={!showComparison}>Kostenlose Beratung anfordern</Button>
+                <div className="flex gap-4">
+                    <Button onClick={handleExport} variant="outline" disabled={!showComparison}>Bericht als PDF exportieren</Button>
+                    <Button onClick={nextStep} variant="primary" disabled={!showComparison}>Kostenlose Beratung anfordern</Button>
+                </div>
             </div>
         </div>
     );
@@ -986,27 +1025,46 @@ const ContactStep = ({ data, prevStep }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        const selectedServicesData = data.selectedServices.map(id => ({
+            ...HEALTH_SERVICES.find(s => s.id === id),
+            ...SERVICE_DETAILS[id]
+        }));
+        const totalCostWithout = selectedServicesData.reduce((sum, s) => sum + s.costs.without, 0);
+        const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
+
+        const reportHTML = `
+            <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;">Zusammenfassung der Analyse</h2>
+            <p><strong>Lebensphase:</strong> ${data.age}</p>
+            <p><strong>Kanton:</strong> ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}</p>
+            <p><strong>Beziehung zum Körper:</strong> ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}</p>
+            <p><strong>Energie-Strategie:</strong> ${data.energyStrategy}</p>
+            <p><strong>Stress-Wetter:</strong> ${data.stressWeather}</p>
+            <p><strong>Alltags-Rucksack:</strong> ${data.burdens.join(', ')}</p>
+            <br>
+            <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;">Kosten-Gegenüberstellung</h2>
+            <table border="1" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+                <thead><tr><th>Behandlung</th><th>Ohne VVG</th><th>Mit VVG</th></tr></thead>
+                <tbody>
+                ${selectedServicesData.map(s => `<tr><td>${s.name}</td><td>CHF ${s.costs.without}</td><td>CHF ${s.costs.with}</td></tr>`).join('')}
+                <tr style="font-weight: bold;"><td>Total</td><td>CHF ${totalCostWithout}</td><td>CHF ${totalCostWith}</td></tr>
+                </tbody>
+            </table>
+        `;
+
         const subject = "Neue Beratungsanfrage von GesundPlus";
         const body = `
 Eine neue Beratungsanfrage ist eingegangen:
-
-Kontaktdaten:
-Name: ${formData.name}
-E-Mail: ${formData.email}
-Telefon: ${formData.phone}
-Nachricht: ${formData.message}
-
----
-
-Zusammenfassung der Analyse:
-Alter: ${data.age}
-Kanton: ${data.canton}
-Gesundheitsstatus: ${data.healthStatus}
-Energie-Strategie: ${data.energyStrategy}
-Stress-Wetter: ${data.stressWeather}
-Alltags-Rucksack: ${data.burdens.join(', ')}
-Gewünschte Leistungen: ${data.selectedServices.join(', ')}
-Prioritäten: ${JSON.stringify(data.priorities, null, 2)}
+<br><br>
+<b>Kontaktdaten:</b><br>
+Name: ${formData.name}<br>
+E-Mail: ${formData.email}<br>
+Telefon: ${formData.phone}<br>
+Nachricht: ${formData.message}<br>
+<br>
+<hr>
+<br>
+${reportHTML}
         `;
         
         window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
