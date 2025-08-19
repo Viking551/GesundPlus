@@ -487,38 +487,62 @@ const ContactModal = ({ data, onClose }) => {
         const totalCostWithout = selectedServicesData.reduce((sum, s) => sum + s.costs.without, 0);
         const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
 
+        const energyStrategyLabels = {
+            sprinter: "Der Sprinter (Vollgas unter der Woche)",
+            proactive: "Der proaktive Lader (baut Erholung aktiv ein)",
+            'island-seeker': "Der Insel-Sucher (schafft tägliche Auszeiten)",
+            'lost-cable': "Der mit dem verlorenen Ladekabel (chronisch energielos)"
+        };
+
+        const stressWeatherLabels = {
+            sunny: "Sonnenschein (mental stabil)",
+            changeable: "Wechselhaft (mittlerer Stress)",
+            storm: "Gewitter (Stress mit körperlichen Symptomen)",
+            drizzle: "Nieselregen (Erschöpfung, Burnout-Symptome)"
+        };
+
+        const burdenLabels = {
+            laptop: "Büroarbeit (Laptop)",
+            tools: "Körperliche Arbeit (Werkzeuge)",
+            responsibility: "Verantwortung für andere",
+            sport: "Aktiver Lebensstil (Sport)",
+            mental: "Mentaler Ballast"
+        };
+
         const reportText = `
-ZUSAMMENFASSUNG DER ANALYSE%0A
---------------------------%0A
-Lebensphase: ${data.age}%0A
-Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}%0A
-Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}%0A
-Energie-Strategie: ${data.energyStrategy}%0A
-Stress-Wetter: ${data.stressWeather}%0A
-Alltags-Rucksack: ${data.burdens.join(', ')}%0A%0A
-KOSTEN-GEGENÜBERSTELLUNG%0A
---------------------------%0A
-${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('%0A')}%0A
---------------------------%0A
-Total mit VVG: CHF ${totalCostWith}%0A
-Total ohne VVG: CHF ${totalCostWithout}%0A
+ZUSAMMENFASSUNG IHRER ANALYSE
+========================================
+• Lebensphase: ${AGE_GROUPS.find(item => item.value === data.age)?.label || data.age}
+• Kanton: ${SWISS_CANTONS.find(item => item.value === data.canton)?.label || data.canton}
+• Beziehung zum Körper: "${HEALTH_STATUS_OPTIONS.find(item => item.value === data.healthStatus)?.label || data.healthStatus}"
+• Energie-Strategie: ${energyStrategyLabels[data.energyStrategy] || data.energyStrategy}
+• Stress-Wetter: ${stressWeatherLabels[data.stressWeather] || data.stressWeather}
+• Alltags-Rucksack enthält: ${data.burdens.map(b => burdenLabels[b] || b).join(', ')}
+
+IHRE INTERESSEN (KOSTEN-GEGENÜBERSTELLUNG)
+========================================
+${selectedServicesData.map(s => `• ${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
+----------------------------------------
+Total mit passender VVG: CHF ${totalCostWith}
+Total ohne VVG: CHF ${totalCostWithout}
         `;
 
         const subject = "Neue Beratungsanfrage von GesundPlus";
-        const body = `
-Hallo, ich möchte eine kostenlose Beratung.%0A%0A
-Meine Kontaktangaben:%0A
-Name: ${formData.name}%0A
-E-Mail: ${formData.email}%0A
-Telefon: ${formData.phone || 'Nicht angegeben'}%0A
-Nachricht: ${formData.message || 'Keine'}%0A%0A
----%0A
-MEIN BERICHT%0A
----%0A
+        const body = `Hallo, ich möchte eine kostenlose Beratung.
+
+Meine Kontaktangaben:
+Name: ${formData.name}
+E-Mail: ${formData.email}
+Telefon: ${formData.phone || 'Nicht angegeben'}
+Nachricht: ${formData.message || 'Keine'}
+
+---
+MEIN BERICHT
+---
 ${reportText}
         `;
         
-        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${body}`;
+        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         setIsSubmitted(true);
     };
 
@@ -982,7 +1006,7 @@ const ResultsStep = ({ data, prevStep, showCatalog, nextStep }) => {
                         Mit der richtigen Versicherung kannst du dein Geld nutzen, um dir all das zu leisten:
                     </p>
                     <Card>
-                        <h3 className="text-xl font-bold mb-4">Kosten-Gegenüberstellung (geschätzte Jahreskosten)</h3>
+                        <h3 className="text-xl font-bold mb-4">Deine Interessen (Kosten-Gegenüberstellung)</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
@@ -1048,38 +1072,62 @@ const ContactStep = ({ data, prevStep }) => {
         const totalCostWithout = selectedServicesData.reduce((sum, s) => sum + s.costs.without, 0);
         const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
 
+        const energyStrategyLabels = {
+            sprinter: "Der Sprinter (Vollgas unter der Woche)",
+            proactive: "Der proaktive Lader (baut Erholung aktiv ein)",
+            'island-seeker': "Der Insel-Sucher (schafft tägliche Auszeiten)",
+            'lost-cable': "Der mit dem verlorenen Ladekabel (chronisch energielos)"
+        };
+
+        const stressWeatherLabels = {
+            sunny: "Sonnenschein (mental stabil)",
+            changeable: "Wechselhaft (mittlerer Stress)",
+            storm: "Gewitter (Stress mit körperlichen Symptomen)",
+            drizzle: "Nieselregen (Erschöpfung, Burnout-Symptome)"
+        };
+
+        const burdenLabels = {
+            laptop: "Büroarbeit (Laptop)",
+            tools: "Körperliche Arbeit (Werkzeuge)",
+            responsibility: "Verantwortung für andere",
+            sport: "Aktiver Lebensstil (Sport)",
+            mental: "Mentaler Ballast"
+        };
+
         const reportText = `
-ZUSAMMENFASSUNG DER ANALYSE%0A
---------------------------%0A
-Lebensphase: ${data.age}%0A
-Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}%0A
-Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}%0A
-Energie-Strategie: ${data.energyStrategy}%0A
-Stress-Wetter: ${data.stressWeather}%0A
-Alltags-Rucksack: ${data.burdens.join(', ')}%0A%0A
-KOSTEN-GEGENÜBERSTELLUNG%0A
---------------------------%0A
-${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('%0A')}%0A
---------------------------%0A
-Total mit VVG: CHF ${totalCostWith}%0A
-Total ohne VVG: CHF ${totalCostWithout}%0A
+ZUSAMMENFASSUNG IHRER ANALYSE
+========================================
+• Lebensphase: ${AGE_GROUPS.find(item => item.value === data.age)?.label || data.age}
+• Kanton: ${SWISS_CANTONS.find(item => item.value === data.canton)?.label || data.canton}
+• Beziehung zum Körper: "${HEALTH_STATUS_OPTIONS.find(item => item.value === data.healthStatus)?.label || data.healthStatus}"
+• Energie-Strategie: ${energyStrategyLabels[data.energyStrategy] || data.energyStrategy}
+• Stress-Wetter: ${stressWeatherLabels[data.stressWeather] || data.stressWeather}
+• Alltags-Rucksack enthält: ${data.burdens.map(b => burdenLabels[b] || b).join(', ')}
+
+IHRE INTERESSEN (KOSTEN-GEGENÜBERSTELLUNG)
+========================================
+${selectedServicesData.map(s => `• ${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
+----------------------------------------
+Total mit passender VVG: CHF ${totalCostWith}
+Total ohne VVG: CHF ${totalCostWithout}
         `;
 
         const subject = "Neue Beratungsanfrage von GesundPlus";
-        const body = `
-Hallo, ich möchte eine kostenlose Beratung.%0A%0A
-Meine Kontaktangaben:%0A
-Name: ${formData.name}%0A
-E-Mail: ${formData.email}%0A
-Telefon: ${formData.phone || 'Nicht angegeben'}%0A
-Nachricht: ${formData.message || 'Keine'}%0A%0A
----%0A
-MEIN BERICHT%0A
----%0A
+        const body = `Hallo, ich möchte eine kostenlose Beratung.
+
+Meine Kontaktangaben:
+Name: ${formData.name}
+E-Mail: ${formData.email}
+Telefon: ${formData.phone || 'Nicht angegeben'}
+Nachricht: ${formData.message || 'Keine'}
+
+---
+MEIN BERICHT
+---
 ${reportText}
         `;
         
-        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${body}`;
+        window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         setIsSubmitted(true);
     };
 
