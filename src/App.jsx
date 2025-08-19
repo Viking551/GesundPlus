@@ -484,7 +484,7 @@ const ContactModal = ({ data, onClose }) => {
             ...HEALTH_SERVICES.find(s => s.id === id),
             ...SERVICE_DETAILS[id]
         }));
-
+        
         const energyStrategyLabels = {
             sprinter: "Der Sprinter (Vollgas unter der Woche)",
             proactive: "Der proaktive Lader (baut Erholung aktiv ein)",
@@ -545,7 +545,7 @@ ${reportText}
             <div className="text-center animate-fade-in">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Vielen Dank!</h2>
                 <p className="text-gray-700 mb-6">Ihr E-Mail-Programm sollte sich nun öffnen, um die Anfrage zu senden. Wir werden uns in Kürze mit Ihnen in Verbindung setzen.</p>
-                <Button onClick={onClose}>Fenster schliessen</Button>
+                <Button onClick={() => window.location.reload()}>Zur Startseite</Button>
             </div>
         );
     }
@@ -653,6 +653,10 @@ const WelcomeStep = ({ nextStep }) => (
                 </div>
             </div>
         </Card>
+        <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg text-sm text-gray-600 mb-8 flex items-start space-x-3">
+             <svg className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+             <p><strong>Ihre Privatsphäre ist uns wichtig:</strong> Dieser Prozess ist zu 100% anonym. Es werden keinerlei persönliche Daten auf unseren Servern gespeichert. Ihre Antworten dienen einzig dazu, Ihnen eine persönliche Empfehlung zu erstellen.</p>
+        </div>
         <Button onClick={nextStep}>
             Finde deine verdiente Gesundheit
             <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
