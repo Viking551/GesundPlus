@@ -484,8 +484,6 @@ const ContactModal = ({ data, onClose }) => {
             ...HEALTH_SERVICES.find(s => s.id === id),
             ...SERVICE_DETAILS[id]
         }));
-        const totalCostWithout = selectedServicesData.reduce((sum, s) => sum + s.costs.without, 0);
-        const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
 
         const energyStrategyLabels = {
             sprinter: "Der Sprinter (Vollgas unter der Woche)",
@@ -510,21 +508,17 @@ const ContactModal = ({ data, onClose }) => {
         };
 
         const reportText = `
-ZUSAMMENFASSUNG IHRER ANALYSE
+ZUSAMMENFASSUNG DER ANALYSE
 ========================================
-• Lebensphase: ${AGE_GROUPS.find(item => item.value === data.age)?.label || data.age}
-• Kanton: ${SWISS_CANTONS.find(item => item.value === data.canton)?.label || data.canton}
-• Beziehung zum Körper: "${HEALTH_STATUS_OPTIONS.find(item => item.value === data.healthStatus)?.label || data.healthStatus}"
-• Energie-Strategie: ${energyStrategyLabels[data.energyStrategy] || data.energyStrategy}
-• Stress-Wetter: ${stressWeatherLabels[data.stressWeather] || data.stressWeather}
-• Alltags-Rucksack enthält: ${data.burdens.map(b => burdenLabels[b] || b).join(', ')}
+• Demografisches Profil: Altersgruppe ${AGE_GROUPS.find(item => item.value === data.age)?.label || data.age}, wohnhaft im Kanton ${SWISS_CANTONS.find(item => item.value === data.canton)?.label || data.canton}.
+• Subjektive Gesundheitseinschätzung: Der Kunde beschreibt die Beziehung zu seinem Körper als "${HEALTH_STATUS_OPTIONS.find(item => item.value === data.healthStatus)?.label || data.healthStatus}".
+• Energiemanagement: ${energyStrategyLabels[data.energyStrategy] || data.energyStrategy}.
+• Stressprofil: Das Stressempfinden wird als "${stressWeatherLabels[data.stressWeather] || data.stressWeather}" beschrieben.
+• Identifizierte Alltagsbelastungen: ${data.burdens.map(b => burdenLabels[b] || b).join(', ')}.
 
-IHRE INTERESSEN (KOSTEN-GEGENÜBERSTELLUNG)
+IDENTIFIZIERTE INTERESSENBEREICHE
 ========================================
-${selectedServicesData.map(s => `• ${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
-----------------------------------------
-Total mit passender VVG: CHF ${totalCostWith}
-Total ohne VVG: CHF ${totalCostWithout}
+${selectedServicesData.map(s => `• ${s.name}`).join('\n')}
         `;
 
         const subject = "Neue Beratungsanfrage von GesundPlus";
@@ -537,7 +531,7 @@ Telefon: ${formData.phone || 'Nicht angegeben'}
 Nachricht: ${formData.message || 'Keine'}
 
 ---
-MEIN BERICHT
+AUTOMATISCHER BERICHT
 ---
 ${reportText}
         `;
@@ -1069,9 +1063,7 @@ const ContactStep = ({ data, prevStep }) => {
             ...HEALTH_SERVICES.find(s => s.id === id),
             ...SERVICE_DETAILS[id]
         }));
-        const totalCostWithout = selectedServicesData.reduce((sum, s) => sum + s.costs.without, 0);
-        const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
-
+        
         const energyStrategyLabels = {
             sprinter: "Der Sprinter (Vollgas unter der Woche)",
             proactive: "Der proaktive Lader (baut Erholung aktiv ein)",
@@ -1095,21 +1087,17 @@ const ContactStep = ({ data, prevStep }) => {
         };
 
         const reportText = `
-ZUSAMMENFASSUNG IHRER ANALYSE
+ZUSAMMENFASSUNG DER ANALYSE
 ========================================
-• Lebensphase: ${AGE_GROUPS.find(item => item.value === data.age)?.label || data.age}
-• Kanton: ${SWISS_CANTONS.find(item => item.value === data.canton)?.label || data.canton}
-• Beziehung zum Körper: "${HEALTH_STATUS_OPTIONS.find(item => item.value === data.healthStatus)?.label || data.healthStatus}"
-• Energie-Strategie: ${energyStrategyLabels[data.energyStrategy] || data.energyStrategy}
-• Stress-Wetter: ${stressWeatherLabels[data.stressWeather] || data.stressWeather}
-• Alltags-Rucksack enthält: ${data.burdens.map(b => burdenLabels[b] || b).join(', ')}
+• Demografisches Profil: Altersgruppe ${AGE_GROUPS.find(item => item.value === data.age)?.label || data.age}, wohnhaft im Kanton ${SWISS_CANTONS.find(item => item.value === data.canton)?.label || data.canton}.
+• Subjektive Gesundheitseinschätzung: Der Kunde beschreibt die Beziehung zu seinem Körper als "${HEALTH_STATUS_OPTIONS.find(item => item.value === data.healthStatus)?.label || data.healthStatus}".
+• Energiemanagement: ${energyStrategyLabels[data.energyStrategy] || data.energyStrategy}.
+• Stressprofil: Das Stressempfinden wird als "${stressWeatherLabels[data.stressWeather] || data.stressWeather}" beschrieben.
+• Identifizierte Alltagsbelastungen: ${data.burdens.map(b => burdenLabels[b] || b).join(', ')}.
 
-IHRE INTERESSEN (KOSTEN-GEGENÜBERSTELLUNG)
+IDENTIFIZIERTE INTERESSENBEREICHE
 ========================================
-${selectedServicesData.map(s => `• ${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
-----------------------------------------
-Total mit passender VVG: CHF ${totalCostWith}
-Total ohne VVG: CHF ${totalCostWithout}
+${selectedServicesData.map(s => `• ${s.name}`).join('\n')}
         `;
 
         const subject = "Neue Beratungsanfrage von GesundPlus";
@@ -1122,7 +1110,7 @@ Telefon: ${formData.phone || 'Nicht angegeben'}
 Nachricht: ${formData.message || 'Keine'}
 
 ---
-MEIN BERICHT
+AUTOMATISCHER BERICHT
 ---
 ${reportText}
         `;
