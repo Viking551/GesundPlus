@@ -479,32 +479,61 @@ const ContactModal = ({ data, onClose }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const subject = "Neue Beratungsanfrage von GesundPlus";
-        const body = `
-Eine neue Beratungsanfrage ist eingegangen:
+        
+        const selectedServicesData = data.selectedServices.map(id => ({
+            ...HEALTH_SERVICES.find(s => s.id === id),
+            ...SERVICE_DETAILS[id]
+        }));
+        const totalCostWithout = selectedServicesData.reduce((sum, s) => sum + s.costs.without, 0);
+        const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
 
-Kontaktdaten:
-Name: ${formData.name}
-E-Mail: ${formData.email}
-Telefon: ${formData.phone}
-Nachricht: ${formData.message}
-
----
-
-Zusammenfassung der Analyse:
-Alter: ${data.age}
-Kanton: ${data.canton}
-Gesundheitsstatus: ${data.healthStatus}
+        const reportText = `
+ZUSAMMENFASSUNG DER ANALYSE
+--------------------------
+Lebensphase: ${data.age}
+Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}
+Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}
 Energie-Strategie: ${data.energyStrategy}
 Stress-Wetter: ${data.stressWeather}
 Alltags-Rucksack: ${data.burdens.join(', ')}
-Gewünschte Leistungen: ${data.selectedServices.join(', ')}
-Prioritäten: ${JSON.stringify(data.priorities, null, 2)}
+
+KOSTEN-GEGENÜBERSTELLUNG
+--------------------------
+${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
+--------------------------
+Total mit VVG: CHF ${totalCostWith}
+Total ohne VVG: CHF ${totalCostWithout}
+        `;
+
+        const subject = "Neue Beratungsanfrage von GesundPlus";
+        const body = `
+Hallo, ich möchte eine kostenlose Beratung.
+
+Meine Kontaktangaben:
+Name: ${formData.name}
+E-Mail: ${formData.email}
+Telefon: ${formData.phone}
+Nachricht: ${formData.message || 'Keine'}
+
+---
+MEIN BERICHT
+---
+${reportText}
         `;
         
         window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         setIsSubmitted(true);
     };
+
+    if (isSubmitted) {
+        return (
+            <div className="text-center animate-fade-in">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Vielen Dank!</h2>
+                <p className="text-gray-700 mb-6">Ihr E-Mail-Programm sollte sich nun öffnen, um die Anfrage zu senden. Wir werden uns in Kürze mit Ihnen in Verbindung setzen.</p>
+                <Button onClick={onClose}>Fenster schliessen</Button>
+            </div>
+        );
+    }
 
     return (
          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in-fast" onClick={onClose}>
@@ -513,24 +542,14 @@ Prioritäten: ${JSON.stringify(data.priorities, null, 2)}
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
                 
-                {isSubmitted ? (
-                    <div className="text-center">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Vielen Dank!</h2>
-                        <p className="text-gray-700 mb-6">Ihre Anfrage wurde übermittelt. Wir werden uns in Kürze mit Ihnen in Verbindung setzen. Ihr E-Mail-Programm sollte sich nun öffnen.</p>
-                        <Button onClick={onClose}>Fenster schliessen</Button>
-                    </div>
-                ) : (
-                    <>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Kostenlose Beratung anfordern</h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <input type="text" name="name" placeholder="Ihr Name" required onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition" />
-                            <input type="email" name="email" placeholder="Ihre E-Mail-Adresse" required onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition" />
-                            <input type="tel" name="phone" placeholder="Ihre Telefonnummer (optional)" onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition" />
-                            <textarea name="message" placeholder="Ihre Nachricht (optional)" rows="4" onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition"></textarea>
-                            <Button type="submit" className="w-full">Anfrage senden</Button>
-                        </form>
-                    </>
-                )}
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Kostenlose Beratung anfordern</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <input type="text" name="name" placeholder="Ihr Name" required onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition" />
+                    <input type="email" name="email" placeholder="Ihre E-Mail-Adresse" required onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition" />
+                    <input type="tel" name="phone" placeholder="Ihre Telefonnummer (optional)" onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition" />
+                    <textarea name="message" placeholder="Ihre Nachricht (optional)" rows="4" onChange={handleChange} className="w-full p-3 border-2 border-gray-200 rounded-xl bg-white focus:border-blue-500 focus:ring-blue-500 transition"></textarea>
+                    <Button type="submit" className="w-full">Anfrage senden</Button>
+                </form>
             </div>
         </div>
     );
@@ -1033,38 +1052,38 @@ const ContactStep = ({ data, prevStep }) => {
         const totalCostWithout = selectedServicesData.reduce((sum, s) => sum + s.costs.without, 0);
         const totalCostWith = selectedServicesData.reduce((sum, s) => sum + s.costs.with, 0);
 
-        const reportHTML = `
-            <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;">Zusammenfassung der Analyse</h2>
-            <p><strong>Lebensphase:</strong> ${data.age}</p>
-            <p><strong>Kanton:</strong> ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}</p>
-            <p><strong>Beziehung zum Körper:</strong> ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}</p>
-            <p><strong>Energie-Strategie:</strong> ${data.energyStrategy}</p>
-            <p><strong>Stress-Wetter:</strong> ${data.stressWeather}</p>
-            <p><strong>Alltags-Rucksack:</strong> ${data.burdens.join(', ')}</p>
-            <br>
-            <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;">Kosten-Gegenüberstellung</h2>
-            <table border="1" cellpadding="5" style="width: 100%; border-collapse: collapse;">
-                <thead><tr><th>Behandlung</th><th>Ohne VVG</th><th>Mit VVG</th></tr></thead>
-                <tbody>
-                ${selectedServicesData.map(s => `<tr><td>${s.name}</td><td>CHF ${s.costs.without}</td><td>CHF ${s.costs.with}</td></tr>`).join('')}
-                <tr style="font-weight: bold;"><td>Total</td><td>CHF ${totalCostWithout}</td><td>CHF ${totalCostWith}</td></tr>
-                </tbody>
-            </table>
+        const reportText = `
+ZUSAMMENFASSUNG DER ANALYSE
+--------------------------
+Lebensphase: ${data.age}
+Kanton: ${SWISS_CANTONS.find(c => c.value === data.canton)?.label}
+Beziehung zum Körper: ${HEALTH_STATUS_OPTIONS.find(h => h.value === data.healthStatus)?.label}
+Energie-Strategie: ${data.energyStrategy}
+Stress-Wetter: ${data.stressWeather}
+Alltags-Rucksack: ${data.burdens.join(', ')}
+
+KOSTEN-GEGENÜBERSTELLUNG
+--------------------------
+${selectedServicesData.map(s => `${s.name}: CHF ${s.costs.with} (statt CHF ${s.costs.without})`).join('\n')}
+--------------------------
+Total mit VVG: CHF ${totalCostWith}
+Total ohne VVG: CHF ${totalCostWithout}
         `;
 
         const subject = "Neue Beratungsanfrage von GesundPlus";
         const body = `
-Eine neue Beratungsanfrage ist eingegangen:
-<br><br>
-<b>Kontaktdaten:</b><br>
-Name: ${formData.name}<br>
-E-Mail: ${formData.email}<br>
-Telefon: ${formData.phone}<br>
-Nachricht: ${formData.message}<br>
-<br>
-<hr>
-<br>
-${reportHTML}
+Hallo, ich möchte eine kostenlose Beratung.
+
+Meine Kontaktangaben:
+Name: ${formData.name}
+E-Mail: ${formData.email}
+Telefon: ${formData.phone}
+Nachricht: ${formData.message || 'Keine'}
+
+---
+MEIN BERICHT
+---
+${reportText}
         `;
         
         window.location.href = `mailto:hakan@issever-consulting.ch?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
