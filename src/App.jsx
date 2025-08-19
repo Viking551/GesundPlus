@@ -508,7 +508,7 @@ const ContactModal = ({ data, onClose }) => {
         };
 
         const reportText = `
-ZUSAMMENFASSUNG DER ANALYSE
+ZUSAMMENFASSUNG IHRER ANALYSE
 ========================================
 • Demografisches Profil: Altersgruppe ${AGE_GROUPS.find(item => item.value === data.age)?.label || data.age}, wohnhaft im Kanton ${SWISS_CANTONS.find(item => item.value === data.canton)?.label || data.canton}.
 • Subjektive Gesundheitseinschätzung: Der Kunde beschreibt die Beziehung zu seinem Körper als "${HEALTH_STATUS_OPTIONS.find(item => item.value === data.healthStatus)?.label || data.healthStatus}".
