@@ -945,7 +945,8 @@ const ResultsStep = ({ data, prevStep, showCatalog, nextStep }) => {
                             </tbody>
                          </table>
                     </div>
-                     <p class="text-center text-gray-600">Drucke diese Seite (Ctrl+P), um sie als PDF zu speichern.</p>
+                     <p class="text-center text-gray-600 mt-10 italic">Dieser Bericht ist dein erster Schritt. Es ist jetzt die Zeit, auf dich zu schauen und dir das zu geben, was du verdienst.</p>
+                     <p class="text-center text-gray-600 mt-4">Drucke diese Seite (Ctrl+P), um sie als PDF zu speichern.</p>
                 </body>
             </html>
         `);
